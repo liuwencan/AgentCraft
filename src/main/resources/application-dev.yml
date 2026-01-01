@@ -1,0 +1,122 @@
+server:
+  port: 8888
+  servlet:
+    encoding:
+      charset: UTF-8
+      force: true
+      enabled: true
+spring:
+  reactor:
+    context-propagation: auto
+  ai:
+    model:
+      chat: openai
+    openai:
+      api-key: @dashscope.api.key@
+      base-url: https://dashscope.aliyuncs.com/compatible-mode/
+      chat:
+        options:
+          model: MiniMax-M2.5
+          temperature: 0.7
+          maxTokens: 20000
+      embedding:
+        base-url: https://dashscope.aliyuncs.com/compatible-mode/
+        api-key: @dashscope.api.key@
+        options:
+          model: text-embedding-v4
+          dimmension: 1024
+    deepseek:
+      api-key: @dashscope.api.key@
+      base-url: https://dashscope.aliyuncs.com/compatible-mode/
+      chat:
+        options:
+          model: deepseek-v3
+          temperature: 0.7
+          maxTokens: 5000
+  datasource:
+    url: jdbc:mysql://127.0.0.1:3306/dodo?useUnicode=true&characterEncoding=utf8&useSSL=false&serverTimezone=GMT%2B8 # 记得改成你自己的
+    username: root # 记得改成你自己的
+    password: 123456 # 记得改成你自己的
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    # 连接池配置
+    hikari:
+      minimum-idle: 5
+      maximum-pool-size: 20
+      idle-timeout: 60000
+      connection-timeout: 30000
+      max-lifetime: 1800000
+
+  # Redis 配置
+  data:
+    redis:
+      host: localhost   # 记得改成你自己的
+      port: 6379
+      database: 6
+      timeout: 5s
+      password: 123456
+
+  # MyBatis-Plus 配置
+  mybatis-plus:
+    mapper-locations: classpath:mapper/*.xml
+  servlet:
+    multipart:
+      enabled: true
+      max-file-size: 50MB
+      max-request-size: 50MB
+
+minio:
+  url: http://127.0.0.1:9000/   # 记得改成你自己的
+  accessKey: minioadmin # 记得改成你自己的
+  secretKey: minioadmin # 记得改成你自己的
+  bucketName: agentcraft
+  endpoint: http://127.0.0.1:9000/
+
+embeddings:
+  store:
+    host: 127.0.0.1   # 记得改成你自己的
+    port: 5433   # 记得改成你自己的
+    database: vector_store   # 记得改成你自己的
+    user: pgvector   # 记得改成你自己的
+    password: pgvector   # 记得改成你自己的
+
+# Tavily 搜索引擎配置
+tavily:
+  api-key: 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  # 记得改成你自己的
+  mcp-url: https://mcp.tavily.com/mcp/
+
+grsai:
+  nanobanana:
+    api-key: sk-ec99XXXXXXXXXXXXXX # 记得改成你自己的
+
+logging:
+  level:
+    org:
+      springframework:
+        ai: INFO
+    io:
+      modelcontextprotocol:
+        client: ERROR
+
+skills:
+  directory: E:\agent\skills
+
+
+# 新增：Actuator 配置
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,prometheus,metrics,info
+      base-path: /actuator
+  endpoint:
+    prometheus:
+      enabled: true
+    health:
+      show-details: always
+  metrics:
+    tags:
+      application: agentcraft
+  prometheus:
+    metrics:
+      export:
+        enabled: true

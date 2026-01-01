@@ -1,0 +1,38 @@
+<configuration>
+    <!-- 引用 Spring Boot 的 logback 基础配置 -->
+    <include resource="org/springframework/boot/logging/logback/defaults.xml" />
+
+    <!-- 应用名称 -->
+    <property scope="context" name="appName" value="agentcraft"/>
+    <property name="LOG_FILE" value="./logs/${appName}.%d{yyyy-MM-dd}"/>
+
+    <!-- 关键：覆盖控制台的日志格式 -->
+    <property name="CONSOLE_LOG_PATTERN" value="%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level [%X{traceId}] %logger{50} - %msg%n"/>
+
+    <!-- 文件日志格式 -->
+    <property name="LOG_PATTERN" value="%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level [%X{traceId}] %logger{50} - %msg%n"/>
+
+    <!-- 文件输出 -->
+    <appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <!-- ... 保持不变 ... -->
+        <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
+            <pattern>${LOG_PATTERN}</pattern>
+            <charset>UTF-8</charset>
+        </encoder>
+    </appender>
+
+    <!-- 异步写入日志 -->
+    <appender name="ASYNC_FILE" class="ch.qos.logback.classic.AsyncAppender">
+        <discardingThreshold>0</discardingThreshold>
+        <queueSize>256</queueSize>
+        <appender-ref ref="FILE"/>
+    </appender>
+
+    <!-- 控制台输出 - 会使用上面定义的 CONSOLE_LOG_PATTERN -->
+    <include resource="org/springframework/boot/logging/logback/console-appender.xml" />
+
+    <root level="INFO">
+        <appender-ref ref="CONSOLE"/>
+        <appender-ref ref="ASYNC_FILE"/>
+    </root>
+</configuration>

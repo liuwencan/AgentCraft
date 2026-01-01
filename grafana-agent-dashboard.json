@@ -1,0 +1,765 @@
+{
+  "__inputs": [
+    {
+      "name": "DS_PROMETHEUS",
+      "label": "Prometheus",
+      "description": "",
+      "type": "datasource",
+      "pluginId": "prometheus",
+      "pluginName": "Prometheus"
+    }
+  ],
+  "__requires": [
+    {
+      "type": "grafana",
+      "id": "grafana",
+      "name": "Grafana",
+      "version": "10.4.0"
+    },
+    {
+      "type": "panel",
+      "id": "stat",
+      "name": "Stat",
+      "version": ""
+    },
+    {
+      "type": "panel",
+      "id": "timeseries",
+      "name": "Time series",
+      "version": ""
+    },
+    {
+      "type": "panel",
+      "id": "text",
+      "name": "Text",
+      "version": ""
+    }
+  ],
+  "annotations": {
+    "list": [
+      {
+        "builtIn": 1,
+        "datasource": {
+          "type": "grafana",
+          "uid": "-- Grafana --"
+        },
+        "enable": true,
+        "hide": true,
+        "iconColor": "rgba(0, 211, 255, 1)",
+        "name": "Annotations & Alerts",
+        "type": "dashboard"
+      }
+    ]
+  },
+  "editable": true,
+  "fiscalYearStartMonth": 0,
+  "graphTooltip": 0,
+  "id": null,
+  "links": [],
+  "liveNow": false,
+  "panels": [
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${DS_PROMETHEUS}"
+      },
+      "gridPos": {
+        "h": 4,
+        "w": 24,
+        "x": 0,
+        "y": 0
+      },
+      "id": 1,
+      "options": {
+        "content": "## 智能体业务监控看板\\n\\n本看板只展示业务指标，不包含 JVM、数据库、线程池等系统指标。\\n\\n覆盖范围：\\n- 请求量、成功率、活跃请求数\\n- 首字响应耗时、总耗时、回合数\\n- Token 消耗\\n- 工具调用次数、失败率、平均耗时\\n- 阶段执行次数、阶段平均耗时",
+        "mode": "markdown"
+      },
+      "targets": [],
+      "title": "看板说明",
+      "type": "text"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${DS_PROMETHEUS}"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "orange",
+                "value": 10
+              },
+              {
+                "color": "red",
+                "value": 30
+              }
+            ]
+          },
+          "unit": "short"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 5,
+        "w": 6,
+        "x": 0,
+        "y": 4
+      },
+      "id": 2,
+      "options": {
+        "colorMode": "value",
+        "graphMode": "area",
+        "justifyMode": "center",
+        "orientation": "auto",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "textMode": "auto"
+      },
+      "targets": [
+        {
+          "editorMode": "code",
+          "expr": "sum(agent_active_count{application=~\"$yingyong\",agent_name=~\"$zhinengti\"})",
+          "legendFormat": "活跃请求数",
+          "range": true,
+          "refId": "A"
+        }
+      ],
+      "title": "当前活跃请求数",
+      "type": "stat"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${DS_PROMETHEUS}"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "ops"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 5,
+        "w": 6,
+        "x": 6,
+        "y": 4
+      },
+      "id": 3,
+      "options": {
+        "colorMode": "value",
+        "graphMode": "area",
+        "justifyMode": "center",
+        "orientation": "auto",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "textMode": "auto"
+      },
+      "targets": [
+        {
+          "editorMode": "code",
+          "expr": "sum(rate(agent_request_count_total{application=~\"$yingyong\",agent_name=~\"$zhinengti\"}[5m]))",
+          "legendFormat": "请求速率",
+          "range": true,
+          "refId": "A"
+        }
+      ],
+      "title": "请求速率",
+      "type": "stat"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${DS_PROMETHEUS}"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "decimals": 2,
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "red",
+                "value": null
+              },
+              {
+                "color": "orange",
+                "value": 0.9
+              },
+              {
+                "color": "green",
+                "value": 0.98
+              }
+            ]
+          },
+          "unit": "percentunit"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 5,
+        "w": 6,
+        "x": 12,
+        "y": 4
+      },
+      "id": 4,
+      "options": {
+        "colorMode": "value",
+        "graphMode": "area",
+        "justifyMode": "center",
+        "orientation": "auto",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "textMode": "auto"
+      },
+      "targets": [
+        {
+          "editorMode": "code",
+          "expr": "sum(rate(agent_request_count_total{application=~\"$yingyong\",agent_name=~\"$zhinengti\",status=\"成功\"}[5m])) / clamp_min(sum(rate(agent_request_count_total{application=~\"$yingyong\",agent_name=~\"$zhinengti\"}[5m])), 1e-9)",
+          "legendFormat": "成功率",
+          "range": true,
+          "refId": "A"
+        }
+      ],
+      "title": "请求成功率",
+      "type": "stat"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${DS_PROMETHEUS}"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "s"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 5,
+        "w": 6,
+        "x": 18,
+        "y": 4
+      },
+      "id": 5,
+      "options": {
+        "colorMode": "value",
+        "graphMode": "area",
+        "justifyMode": "center",
+        "orientation": "auto",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "textMode": "auto"
+      },
+      "targets": [
+        {
+          "editorMode": "code",
+          "expr": "sum(rate(agent_first_token_duration_seconds_sum{application=~\"$yingyong\",agent_name=~\"$zhinengti\"}[5m])) / clamp_min(sum(rate(agent_first_token_duration_seconds_count{application=~\"$yingyong\",agent_name=~\"$zhinengti\"}[5m])), 1e-9)",
+          "legendFormat": "首字平均耗时",
+          "range": true,
+          "refId": "A"
+        }
+      ],
+      "title": "首字平均耗时",
+      "type": "stat"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${DS_PROMETHEUS}"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "ops"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 0,
+        "y": 9
+      },
+      "id": 6,
+      "options": {
+        "legend": {
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "desc"
+        }
+      },
+      "targets": [
+        {
+          "editorMode": "code",
+          "expr": "sum by (agent_name) (rate(agent_request_count_total{application=~\"$yingyong\",agent_name=~\"$zhinengti\"}[5m]))",
+          "legendFormat": "{{agent_name}}",
+          "range": true,
+          "refId": "A"
+        }
+      ],
+      "title": "各智能体请求速率",
+      "type": "timeseries"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${DS_PROMETHEUS}"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "s"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 12,
+        "y": 9
+      },
+      "id": 7,
+      "options": {
+        "legend": {
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "desc"
+        }
+      },
+      "targets": [
+        {
+          "editorMode": "code",
+          "expr": "sum by (agent_name) (rate(agent_request_duration_seconds_sum{application=~\"$yingyong\",agent_name=~\"$zhinengti\"}[5m])) / clamp_min(sum by (agent_name) (rate(agent_request_duration_seconds_count{application=~\"$yingyong\",agent_name=~\"$zhinengti\"}[5m])), 1e-9)",
+          "legendFormat": "{{agent_name}}",
+          "range": true,
+          "refId": "A"
+        }
+      ],
+      "title": "各智能体平均总耗时",
+      "type": "timeseries"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${DS_PROMETHEUS}"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 0,
+        "y": 17
+      },
+      "id": 8,
+      "options": {
+        "legend": {
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "desc"
+        }
+      },
+      "targets": [
+        {
+          "editorMode": "code",
+          "expr": "sum by (agent_name) (rate(agent_rounds_per_request_sum{application=~\"$yingyong\",agent_name=~\"$zhinengti\"}[5m])) / clamp_min(sum by (agent_name) (rate(agent_rounds_per_request_count{application=~\"$yingyong\",agent_name=~\"$zhinengti\"}[5m])), 1e-9)",
+          "legendFormat": "{{agent_name}}",
+          "range": true,
+          "refId": "A"
+        }
+      ],
+      "title": "各智能体平均回合数",
+      "type": "timeseries"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${DS_PROMETHEUS}"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "ops"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 12,
+        "y": 17
+      },
+      "id": 9,
+      "options": {
+        "legend": {
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "desc"
+        }
+      },
+      "targets": [
+        {
+          "editorMode": "code",
+          "expr": "sum by (agent_name, direction) (rate(agent_token_count_total{application=~\"$yingyong\",agent_name=~\"$zhinengti\"}[5m]))",
+          "legendFormat": "{{agent_name}} - {{direction}}",
+          "range": true,
+          "refId": "A"
+        }
+      ],
+      "title": "Token 消耗速率",
+      "type": "timeseries"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${DS_PROMETHEUS}"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "s"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 0,
+        "y": 25
+      },
+      "id": 10,
+      "options": {
+        "legend": {
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "desc"
+        }
+      },
+      "targets": [
+        {
+          "editorMode": "code",
+          "expr": "sum by (tool_name) (rate(agent_tool_call_duration_seconds_sum{application=~\"$yingyong\",agent_name=~\"$zhinengti\",tool_name=~\"$gongju\"}[5m])) / clamp_min(sum by (tool_name) (rate(agent_tool_call_duration_seconds_count{application=~\"$yingyong\",agent_name=~\"$zhinengti\",tool_name=~\"$gongju\"}[5m])), 1e-9)",
+          "legendFormat": "{{tool_name}}",
+          "range": true,
+          "refId": "A"
+        }
+      ],
+      "title": "工具平均耗时",
+      "type": "timeseries"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${DS_PROMETHEUS}"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "decimals": 2,
+          "unit": "percentunit"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 12,
+        "y": 25
+      },
+      "id": 11,
+      "options": {
+        "legend": {
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "desc"
+        }
+      },
+      "targets": [
+        {
+          "editorMode": "code",
+          "expr": "sum by (tool_name) (rate(agent_tool_call_count_total{application=~\"$yingyong\",agent_name=~\"$zhinengti\",tool_name=~\"$gongju\",result=\"失败\"}[5m])) / clamp_min(sum by (tool_name) (rate(agent_tool_call_count_total{application=~\"$yingyong\",agent_name=~\"$zhinengti\",tool_name=~\"$gongju\"}[5m])), 1e-9)",
+          "legendFormat": "{{tool_name}}",
+          "range": true,
+          "refId": "A"
+        }
+      ],
+      "title": "工具失败率",
+      "type": "timeseries"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${DS_PROMETHEUS}"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "ops"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 0,
+        "y": 33
+      },
+      "id": 12,
+      "options": {
+        "legend": {
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "desc"
+        }
+      },
+      "targets": [
+        {
+          "editorMode": "code",
+          "expr": "sum by (tool_name, result) (rate(agent_tool_call_count_total{application=~\"$yingyong\",agent_name=~\"$zhinengti\",tool_name=~\"$gongju\"}[5m]))",
+          "legendFormat": "{{tool_name}} - {{result}}",
+          "range": true,
+          "refId": "A"
+        }
+      ],
+      "title": "工具调用速率",
+      "type": "timeseries"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${DS_PROMETHEUS}"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "ops"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 12,
+        "y": 33
+      },
+      "id": 13,
+      "options": {
+        "legend": {
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "desc"
+        }
+      },
+      "targets": [
+        {
+          "editorMode": "code",
+          "expr": "sum by (stage_name, status) (increase(agent_stage_count_total{application=~\"$yingyong\",agent_name=~\"$zhinengti\"}[1h]))",
+          "legendFormat": "{{stage_name}} - {{status}}",
+          "range": true,
+          "refId": "A"
+        }
+      ],
+      "title": "阶段执行次数（近一小时）",
+      "type": "timeseries"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${DS_PROMETHEUS}"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "s"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 24,
+        "x": 0,
+        "y": 41
+      },
+      "id": 14,
+      "options": {
+        "legend": {
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "desc"
+        }
+      },
+      "targets": [
+        {
+          "editorMode": "code",
+          "expr": "sum by (stage_name) (rate(agent_stage_duration_seconds_sum{application=~\"$yingyong\",agent_name=~\"$zhinengti\"}[5m])) / clamp_min(sum by (stage_name) (rate(agent_stage_duration_seconds_count{application=~\"$yingyong\",agent_name=~\"$zhinengti\"}[5m])), 1e-9)",
+          "legendFormat": "{{stage_name}}",
+          "range": true,
+          "refId": "A"
+        }
+      ],
+      "title": "阶段平均耗时",
+      "type": "timeseries"
+    }
+  ],
+  "refresh": "30s",
+  "schemaVersion": 39,
+  "style": "dark",
+  "tags": [
+    "智能体业务监控",
+    "dodo-agent"
+  ],
+  "templating": {
+    "list": [
+      {
+        "current": {
+          "selected": true,
+          "text": "dodo-agent",
+          "value": "dodo-agent"
+        },
+        "datasource": {
+          "type": "prometheus",
+          "uid": "${DS_PROMETHEUS}"
+        },
+        "definition": "label_values(agent_request_count_total, application)",
+        "hide": 0,
+        "includeAll": false,
+        "label": "应用名",
+        "multi": false,
+        "name": "yingyong",
+        "options": [],
+        "query": {
+          "query": "label_values(agent_request_count_total, application)",
+          "refId": "A"
+        },
+        "refresh": 1,
+        "regex": "",
+        "skipUrlSync": false,
+        "sort": 1,
+        "type": "query"
+      },
+      {
+        "current": {
+          "selected": true,
+          "text": "All",
+          "value": "$__all"
+        },
+        "datasource": {
+          "type": "prometheus",
+          "uid": "${DS_PROMETHEUS}"
+        },
+        "definition": "label_values(agent_request_count_total{application=~\"$yingyong\"}, agent_name)",
+        "hide": 0,
+        "includeAll": true,
+        "label": "智能体",
+        "multi": true,
+        "name": "zhinengti",
+        "options": [],
+        "query": {
+          "query": "label_values(agent_request_count_total{application=~\"$yingyong\"}, agent_name)",
+          "refId": "B"
+        },
+        "refresh": 1,
+        "regex": "",
+        "skipUrlSync": false,
+        "sort": 1,
+        "type": "query"
+      },
+      {
+        "current": {
+          "selected": true,
+          "text": "All",
+          "value": "$__all"
+        },
+        "datasource": {
+          "type": "prometheus",
+          "uid": "${DS_PROMETHEUS}"
+        },
+        "definition": "label_values(agent_tool_call_count_total{application=~\"$yingyong\",agent_name=~\"$zhinengti\"}, tool_name)",
+        "hide": 0,
+        "includeAll": true,
+        "label": "工具",
+        "multi": true,
+        "name": "gongju",
+        "options": [],
+        "query": {
+          "query": "label_values(agent_tool_call_count_total{application=~\"$yingyong\",agent_name=~\"$zhinengti\"}, tool_name)",
+          "refId": "C"
+        },
+        "refresh": 1,
+        "regex": "",
+        "skipUrlSync": false,
+        "sort": 1,
+        "type": "query"
+      }
+    ]
+  },
+  "time": {
+    "from": "now-6h",
+    "to": "now"
+  },
+  "timepicker": {},
+  "timezone": "",
+  "title": "Dodo Agent 业务监控看板",
+  "uid": "dodo-agent-business-monitor",
+  "version": 1,
+  "weekStart": ""
+}
