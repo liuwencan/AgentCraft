@@ -6,6 +6,20 @@
     <title>Rel Agent</title>
     <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🌱</text></svg>">
     <link rel="stylesheet" href="css/style.css">
+    <!-- 主题预应用:在 Vue 挂载前根据 localStorage/prefers-color-scheme 立即设置 data-theme,避免闪烁 -->
+    <script>
+        (function() {
+            try {
+                var saved = localStorage.getItem('agentcraft_theme');
+                var theme = (saved === 'light' || saved === 'dark')
+                    ? saved
+                    : (window.matchMedia && window.matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark');
+                document.documentElement.setAttribute('data-theme', theme);
+            } catch (e) {
+                document.documentElement.setAttribute('data-theme', 'dark');
+            }
+        })();
+    </script>
     <!-- Vue 3 CDN -->
     <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
     <!-- Marked.js for Markdown rendering -->
@@ -29,9 +43,17 @@
             <!-- 左侧会话列表 -->
             <div class="sidebar">
                 <div class="sidebar-header">
-                    <div class="app-title">
-                        <span class="logo-icon">🌱</span>
-                        <span class="title-text">AgentCraft</span>
+                    <div class="header-top">
+                        <div class="app-title">
+                            <span class="logo-icon">🌱</span>
+                            <span class="title-text">AgentCraft</span>
+                        </div>
+                        <button class="theme-toggle" @click="toggleTheme"
+                                :title="theme === 'dark' ? '切换到明亮模式' : '切换到暗黑模式'"
+                                :aria-label="theme === 'dark' ? '切换到明亮模式' : '切换到暗黑模式'">
+                            <i class="fas fa-sun theme-icon" aria-hidden="true"></i>
+                            <i class="fas fa-moon theme-icon" aria-hidden="true"></i>
+                        </button>
                     </div>
                     <button class="new-chat-btn" @click="createNewChat">
                         <i class="fas fa-plus"></i>

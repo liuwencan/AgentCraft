@@ -1,5 +1,8 @@
 const { createApp, ref, computed, nextTick, onMounted, watch } = Vue;
 
+// 主题持久化的 localStorage key
+const THEME_STORAGE_KEY = 'agentcraft_theme';
+
 createApp({
     setup() {
         // ===== 配置和常量 =====
@@ -9,6 +12,8 @@ createApp({
         const { STREAM_TYPES, SUPPORTED_FILE_TYPES } = APP_CONSTANTS;
 
         // ===== 状态 =====
+        // 主题: 'dark' (默认) 或 'light'
+        const theme = ref('dark');
         const selectedAgent = ref('chat');
         const chatList = ref([]);
         const currentChatId = ref(null);
@@ -39,8 +44,49 @@ createApp({
         // 用于中断流式请求的 AbortController
         let abortController = null;
 
+        // ===== 主题管理 =====
+        // 从 localStorage 读取用户偏好,若没有则尊重系统 prefers-color-scheme
+        const getInitialTheme = () => {
+            try {
+                const saved = localStorage.getItem(THEME_STORAGE_KEY);
+                if (saved === 'light' || saved === 'dark') {
+                    return saved;
+                }
+            } catch (e) {
+                // localStorage 可能被禁用,忽略
+            }
+            if (typeof window.matchMedia === 'function'
+                && window.matchMedia('(prefers-color-scheme: light)').matches) {
+                return 'light';
+            }
+            return 'dark';
+        };
+
+        const applyTheme = (value) => {
+            // 写入到 <html data-theme="..."> 供 CSS 选择器使用
+            document.documentElement.setAttribute('data-theme', value);
+        };
+
+        const toggleTheme = () => {
+            theme.value = theme.value === 'dark' ? 'light' : 'dark';
+        };
+
+        // theme 变化时同步到 DOM 和 localStorage
+        watch(theme, (value) => {
+            applyTheme(value);
+            try {
+                localStorage.setItem(THEME_STORAGE_KEY, value);
+            } catch (e) {
+                // 忽略写入失败
+            }
+        });
+
         // ===== 初始化 =====
         onMounted(async () => {
+            // 尽早应用主题,避免首屏闪烁
+            theme.value = getInitialTheme();
+            applyTheme(theme.value);
+
             await loadChatsFromStorage();
             createNewChat();
             APP_UTILS.setupMarkdown();
@@ -684,6 +730,7 @@ createApp({
             backendUrl,
             connectionError,
             agents,
+            theme,
             selectedAgent,
             chatList,
             currentChatId,
@@ -715,6 +762,7 @@ createApp({
             renderMarkdown,
             formatFileSize,
             testConnection,
+            toggleTheme,
             showConfirmDialog,
             confirmTitle,
             confirmMessage,
