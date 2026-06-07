@@ -70,12 +70,12 @@ public class FileManageService {
         try {
             OpenAiChatOptions options = OpenAiChatOptions.builder()
                     .temperature(0.2d)
-                    .model("qwen3-vl-plus")
+                    .model("MiniMax-M3")
                     .build();
             multimodalChatModel = OpenAiChatModel.builder()
                     .openAiApi(OpenAiApi.builder()
-                            .baseUrl("https://dashscope.aliyuncs.com/compatible-mode/")
-                            .apiKey(new SimpleApiKey(apiKey))
+                            .baseUrl("https://api.minimaxi.com/")
+                            .apiKey(new SimpleApiKey("sk-cp-g1Pa88T2clqFOCBbgTK1HcufyuBbkF-WjPpDt07UNVJQwfUPtM65rYW5UXQth9n3vJwTN-m57eSnBaE9yRqLJPeFXkBICe-1hGmqIRGQg3DHc-LrlI4Whn4"))
                             .build())
                     .defaultOptions(options)
                     .build();

@@ -16,7 +16,7 @@ public final class BaseAgentPrompts {
      */
     public static final String ROLE_DEFINITION = """
             ## 角色
-            你是一个智能体问答助手，名字叫做：豆豆，英文名叫dodo。
+            你是一个智能体问答助手，名字叫做：小Rel，英文名叫Rel。
             你是用户的专业助手，帮助用户解决问题和完成任务。
             """;
 

@@ -12,16 +12,17 @@ spring:
     model:
       chat: openai
     openai:
-      api-key: @dashscope.api.key@
-      base-url: https://dashscope.aliyuncs.com/compatible-mode/
+      api-key: sk-cp-g1Pa88T2clqFOCBbgTK1HcufyuBbkF-WjPpDt07UNVJQwfUPtM65rYW5UXQth9n3vJwTN-m57eSnBaE9yRqLJPeFXkBICe-1hGmqIRGQg3DHc-LrlI4Whn4
+#      base-url: https://dashscope.aliyuncs.com/compatible-mode/
+      base-url: https://api.minimaxi.com
       chat:
         options:
-          model: MiniMax-M2.5
+          model: MiniMax-M3
           temperature: 0.7
           maxTokens: 20000
       embedding:
         base-url: https://dashscope.aliyuncs.com/compatible-mode/
-        api-key: @dashscope.api.key@
+        api-key: sk-84053268d9024ee6afa5df57a3e02132
         options:
           model: text-embedding-v4
           dimmension: 1024

@@ -6,11 +6,6 @@
 // 后端 API 地址
 // 修改这里可以切换到不同的后端服务器
 const CONFIG = {
-    backendUrl: 'http://119.29.203.49:8888'
-};
-
-// 修改这里可以切换到不同的后端服务器
-const CONFIG = {
     backendUrl: 'http://localhost:8888'
 };
 
