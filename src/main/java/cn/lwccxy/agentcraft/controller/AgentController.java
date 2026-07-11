@@ -6,6 +6,7 @@ import cn.lwccxy.agentcraft.agent.pptx.PPTBuilderAgent;
 import cn.lwccxy.agentcraft.agent.skills.SkillsReactAgent;
 import cn.lwccxy.agentcraft.agent.websearch.WebSearchReactAgent;
 import cn.lwccxy.agentcraft.context.ContextPolicy;
+import cn.lwccxy.agentcraft.context.UserContext;
 import cn.lwccxy.agentcraft.service.AgentTaskManager;
 import cn.lwccxy.agentcraft.service.AiSessionService;
 import cn.lwccxy.agentcraft.tool.BashTool;
@@ -91,7 +92,11 @@ public class AgentController implements InitializingBean {
     @Operation(summary = "智能问答", description = "接收用户查询并返回流式响应，使用联网搜索获取信息")
     public Flux<String> webSearchStream(@RequestParam(required = true) String query,
                                         @RequestParam(required = true) String conversationId) {
-        log.info("收到网页搜索请求: query={}, conversationId={}", query, conversationId);
+        Long userId = UserContext.currentUserId();
+        if (userId == null) {
+            return Flux.error(new IllegalStateException("未获取到当前登录用户"));
+        }
+        log.info("收到网页搜索请求: query={}, conversationId={}, userId={}", query, conversationId, userId);
 
         if (query == null || query.trim().isEmpty()) {
             log.warn("查询参数为空或无效");
@@ -100,6 +105,7 @@ public class AgentController implements InitializingBean {
 
         try {
             WebSearchReactAgent webSearchReactAgent = initWebSearchAgent();
+            webSearchReactAgent.setCurrentUserId(userId);
             // 使用持久化记忆加载历史记录
             ChatMemory persistentMemory = webSearchReactAgent.createPersistentChatMemory(conversationId, 30);
             webSearchReactAgent.setChatMemory(persistentMemory);
@@ -115,7 +121,11 @@ public class AgentController implements InitializingBean {
     public Flux<String> fileStream(@RequestParam(required = true) String query,
                                    @RequestParam(required = true) String conversationId,
                                    @RequestParam(required = true) String fileId) {
-        log.info("收到文件问答请求: query={}, conversationId={}, fileId={}", query, conversationId, fileId);
+        Long userId = UserContext.currentUserId();
+        if (userId == null) {
+            return Flux.error(new IllegalStateException("未获取到当前登录用户"));
+        }
+        log.info("收到文件问答请求: query={}, conversationId={}, fileId={}, userId={}", query, conversationId, fileId, userId);
 
         if (query == null || query.trim().isEmpty()) {
             log.warn("查询参数为空或无效");
@@ -129,6 +139,7 @@ public class AgentController implements InitializingBean {
 
         try {
             FileReactAgent fileReactAgent = initFileReactAgent();
+            fileReactAgent.setCurrentUserId(userId);
             // 使用持久化记忆加载历史记录
             ChatMemory persistentMemory = fileReactAgent.createPersistentChatMemory(conversationId, 30);
             fileReactAgent.setChatMemory(persistentMemory);
@@ -143,7 +154,11 @@ public class AgentController implements InitializingBean {
     @Operation(summary = "PPT 生成", description = "接收用户需求并返回流式响应，基于模板驱动生成PPT")
     public Flux<String> pptxStream(@RequestParam(required = true) String query,
                                    @RequestParam(required = true) String conversationId) {
-        log.info("收到PPT Builder请求: query={}, conversationId={}", query, conversationId);
+        Long userId = UserContext.currentUserId();
+        if (userId == null) {
+            return Flux.error(new IllegalStateException("未获取到当前登录用户"));
+        }
+        log.info("收到PPT Builder请求: query={}, conversationId={}, userId={}", query, conversationId, userId);
 
         if (query == null || query.trim().isEmpty()) {
             log.warn("查询参数为空或无效");
@@ -152,6 +167,7 @@ public class AgentController implements InitializingBean {
 
         try {
             PPTBuilderAgent pptBuilderAgent = initPPTBuilderAgent();
+            pptBuilderAgent.setCurrentUserId(userId);
             // 使用持久化记忆加载历史记录
             ChatMemory persistentMemory = pptBuilderAgent.createPersistentChatMemory(conversationId, 30);
             pptBuilderAgent.setChatMemory(persistentMemory);
@@ -166,7 +182,11 @@ public class AgentController implements InitializingBean {
     @Operation(summary = "深度研究", description = "接收用户查询并返回流式响应，使用计划-执行模式进行深度研究")
     public Flux<String> deepStream(@RequestParam(required = true) String query,
                                     @RequestParam(required = true) String conversationId) {
-        log.info("收到深度研究请求: query={}, conversationId={}", query, conversationId);
+        Long userId = UserContext.currentUserId();
+        if (userId == null) {
+            return Flux.error(new IllegalStateException("未获取到当前登录用户"));
+        }
+        log.info("收到深度研究请求: query={}, conversationId={}, userId={}", query, conversationId, userId);
 
         if (query == null || query.trim().isEmpty()) {
             log.warn("查询参数为空或无效");
@@ -175,6 +195,7 @@ public class AgentController implements InitializingBean {
 
         try {
             PlanExecuteAgent planExecuteAgent = initPlanExecuteAgent();
+            planExecuteAgent.setCurrentUserId(userId);
             // 使用持久化记忆加载历史记录
             ChatMemory persistentMemory = planExecuteAgent.createPersistentChatMemory(conversationId, 30);
             planExecuteAgent.setChatMemory(persistentMemory);
@@ -190,7 +211,12 @@ public class AgentController implements InitializingBean {
     public Flux<String> skillsStream(@RequestParam(required = true) String query,
                                       @RequestParam(required = true) String conversationId,
                                       @RequestParam(required = false) String fileId) {
-        log.info("收到Skills请求: query={}, conversationId={}, fileId={}", query, conversationId, fileId);
+        Long userId = UserContext.currentUserId();
+        if (userId == null) {
+            return Flux.error(new IllegalStateException("未获取到当前登录用户"));
+        }
+
+        log.info("收到Skills请求: query={}, conversationId={}, fileId={}, userId={}", query, conversationId, fileId, userId);
 
         if (query == null || query.trim().isEmpty()) {
             log.warn("查询参数为空或无效");
@@ -200,6 +226,7 @@ public class AgentController implements InitializingBean {
         try {
             // springai原生的方式
             SkillsReactAgent skillsReactAgent = initSkillsReactAgent();
+            skillsReactAgent.setCurrentUserId(userId);
             // 手动构建的skills
 //            SkillsReactAgent skillsReactAgent = initManualSkillsReactAgent();
             ChatMemory persistentMemory = skillsReactAgent.createPersistentChatMemory(conversationId, 30);

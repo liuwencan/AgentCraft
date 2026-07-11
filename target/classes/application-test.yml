@@ -34,9 +34,9 @@ spring:
           temperature: 0.7
           maxTokens: 5000
   datasource:
-    url: jdbc:mysql://119.29.203.49:3306/dodo?useUnicode=true&characterEncoding=utf8&useSSL=false&serverTimezone=GMT%2B8 # 记得改成你自己的
-    username: root # 记得改成你自己的
-    password: qaz112233... # 记得改成你自己的
+    url: jdbc:mysql://119.29.203.49:3306/dodo?useUnicode=true&characterEncoding=utf8&useSSL=false&serverTimezone=GMT%2B8  
+    username: root  
+    password: qaz112233...  
     driver-class-name: com.mysql.cj.jdbc.Driver
     # 连接池配置
     hikari:
@@ -46,14 +46,30 @@ spring:
       connection-timeout: 30000
       max-lifetime: 1800000
 
-  # Redis 配置
-  data:
-    redis:
-      host: 119.29.203.49   # 记得改成你自己的
-      port: 6379
-      database: 6
-      timeout: 5s
-      password: qaz112233...
+  # Redis 配置：统一走 Redisson
+  redis:
+    redisson:
+      config: |
+        singleServerConfig:
+          idleConnectionTimeout: 10000
+          connectTimeout: 10000
+          timeout: 3000
+          retryAttempts: 3
+          retryInterval: 1500
+          password: "qaz112233..."
+          subscriptionsPerConnection: 5
+          clientName: null
+          address: "redis://119.29.203.49:6379"
+          subscriptionConnectionMinimumIdleSize: 1
+          subscriptionConnectionPoolSize: 50
+          connectionMinimumIdleSize: 24
+          connectionPoolSize: 64
+          database: 6
+          dnsMonitoringInterval: 5000
+        threads: 16
+        nettyThreads: 32
+        codec: !<org.redisson.codec.JsonJacksonCodec> {}
+        transportMode: "NIO"
 
   # MyBatis-Plus 配置
   mybatis-plus:
@@ -65,28 +81,28 @@ spring:
       max-request-size: 50MB
 
 minio:
-  url: http://119.29.203.49:9011/   # 记得改成你自己的
-  accessKey: minioadmin # 记得改成你自己的
-  secretKey: qaz112233... # 记得改成你自己的
+  url: http://119.29.203.49:9011/    
+  accessKey: minioadmin  
+  secretKey: qaz112233...  
   bucketName: agentcraft
   endpoint: http://119.29.203.49:9011/
 
 embeddings:
   store:
-    host: 119.29.203.49   # 记得改成你自己的
-    port: 5432   # 记得改成你自己的
-    database: vector_store   # 记得改成你自己的
-    user: pgvector   # 记得改成你自己的
-    password: pgvector   # 记得改成你自己的
+    host: 119.29.203.49    
+    port: 5432    
+    database: vector_store    
+    user: pgvector    
+    password: pgvector    
 
 # Tavily 搜索引擎配置
 tavily:
-  api-key: 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  # 记得改成你自己的
+  api-key: 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   
   mcp-url: https://mcp.tavily.com/mcp/
 
 grsai:
   nanobanana:
-    api-key: sk-ec99XXXXXXXXXXXXXX # 记得改成你自己的
+    api-key: sk-ec99XXXXXXXXXXXXXX  
 
 logging:
   level:
@@ -99,24 +115,3 @@ logging:
 
 skills:
   directory: /home/ubuntu/skills
-
-
-# 新增：Actuator 配置
-management:
-  endpoints:
-    web:
-      exposure:
-        include: health,prometheus,metrics,info
-      base-path: /actuator
-  endpoint:
-    prometheus:
-      access: unrestricted
-    health:
-      show-details: always
-  metrics:
-    tags:
-      application: agentcraft
-  prometheus:
-    metrics:
-      export:
-        enabled: true

@@ -1,0 +1,21 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(find:*)",
+      "Read(//e/code/java-project/**)",
+      "Bash(cat AgentCraft-frontend/src/api/modules/auth.js)",
+      "Bash(cat AgentCraft-frontend/src/stores/user.js)",
+      "Bash(cat AgentCraft-frontend/src/api/request.js)",
+      "Bash(grep -rin \"mybatis\\\\|sa-token\\\\|logic\\\\|logic-delete\\\\|redis:\" src/main/resources/application*.y*)",
+      "Bash(ls target/*.jar)",
+      "Bash(mvn -q -o compile)",
+      "Bash(java -version)",
+      "Read(//c/Program Files/**)",
+      "Read(//c/Users/15722/**)",
+      "Bash(sed -n '1,40p' src/main/resources/application.yml)",
+      "Bash(sed -n '1,40p' src/main/resources/application-dev.yml)",
+      "Bash(ls:*)",
+      "Bash(awk 'NR>=103 && NR<=120' E:/code/java-project/AgentCraft/src/main/java/cn/lwccxy/agentcraft/controller/FileController.java)"
+    ]
+  }
+}

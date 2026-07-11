@@ -1,16 +1,17 @@
 package cn.lwccxy.agentcraft.controller;
 
-import cn.lwccxy.agentcraft.entity.record.pptx.AiPptInst;
-import cn.lwccxy.agentcraft.mapper.AiPptInstMapper;
-import cn.lwccxy.agentcraft.mapper.AiSessionMapper;
 import cn.lwccxy.agentcraft.common.BaseResult;
+import cn.lwccxy.agentcraft.context.UserContext;
 import cn.lwccxy.agentcraft.entity.AiFileInfo;
 import cn.lwccxy.agentcraft.entity.AiSession;
+import cn.lwccxy.agentcraft.entity.record.pptx.AiPptInst;
 import cn.lwccxy.agentcraft.entity.vo.MessageVO;
 import cn.lwccxy.agentcraft.entity.vo.PageResult;
 import cn.lwccxy.agentcraft.entity.vo.SessionDetailVO;
 import cn.lwccxy.agentcraft.entity.vo.SessionListVO;
 import cn.lwccxy.agentcraft.mapper.AiFileInfoMapper;
+import cn.lwccxy.agentcraft.mapper.AiPptInstMapper;
+import cn.lwccxy.agentcraft.mapper.AiSessionMapper;
 import cn.lwccxy.agentcraft.service.AiSessionService;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
@@ -21,16 +22,15 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 
 /**
  * 会话管理控制器
- * 提供会话查询、列表、删除等接口
+ * 提供会话查询、列表、删除等接口。
+ * 所有接口都按当前登录用户 users.id 进行数据隔离。
  */
 @RestController
 @RequestMapping("/session")
@@ -56,12 +56,17 @@ public class SessionController {
     @GetMapping("/{conversationId}")
     @Operation(summary = "查询会话详情", description = "根据conversationId查询会话详情")
     public BaseResult<SessionDetailVO> getSession(@PathVariable String conversationId) {
-        log.info("查询会话详情: conversationId={}", conversationId);
+        Long userId = UserContext.currentUserId();
+        if (userId == null) {
+            return BaseResult.newAuthError();
+        }
+        log.info("查询会话详情: conversationId={}, userId={}", conversationId, userId);
 
         try {
-            // 查询会话记录
+            // 仅查当前用户的会话
             LambdaQueryWrapper<AiSession> sessionQuery = new LambdaQueryWrapper<AiSession>()
                     .eq(AiSession::getSessionId, conversationId)
+                    .eq(AiSession::getUserId, userId)
                     .orderByAsc(AiSession::getCreateTime);
 
             List<AiSession> sessions = aiSessionService.list(sessionQuery);
@@ -70,12 +75,9 @@ public class SessionController {
                 return BaseResult.newError("会话不存在");
             }
 
-            // 获取agent类型（从最新记录获取）
-            String agentType = sessions.get(0).getAgentType();
-
             SessionDetailVO detailVO = SessionDetailVO.builder()
                     .conversationId(conversationId)
-                    .agentType(agentType)
+                    .agentType(sessions.get(0).getAgentType())
                     .fileid(sessions.get(0).getFileid())
                     .messages(sessions.stream()
                             .map(this::convertToMessageVO)
@@ -94,15 +96,19 @@ public class SessionController {
      * 查询会话列表（分页）
      */
     @GetMapping("/list")
-    @Operation(summary = "查询会话列表", description = "分页查询会话列表")
+    @Operation(summary = "查询会话列表", description = "分页查询当前用户的会话列表")
     public BaseResult<PageResult<SessionListVO>> getSessionList(
             @Parameter(description = "页码，默认1") @RequestParam(defaultValue = "1") Integer pageNum,
             @Parameter(description = "页大小，默认10") @RequestParam(defaultValue = "10") Integer pageSize) {
-        log.info("查询会话列表: pageNum={}, pageSize={}", pageNum, pageSize);
+        Long userId = UserContext.currentUserId();
+        if (userId == null) {
+            return BaseResult.newAuthError();
+        }
+        log.info("查询会话列表: pageNum={}, pageSize={}, userId={}", pageNum, pageSize, userId);
 
         try {
             Page<AiSession> page = new Page<>(pageNum, pageSize);
-            IPage<AiSession> resultPage = aiSessionMapper.selectSessionListWithFirstRecord(page);
+            IPage<AiSession> resultPage = aiSessionMapper.selectSessionListWithFirstRecord(page, userId);
 
             List<SessionListVO> sessionList = resultPage.getRecords().stream()
                     .map(session -> SessionListVO.fromAiSession(session, null))
@@ -127,36 +133,42 @@ public class SessionController {
      * 删除会话
      */
     @DeleteMapping("/{conversationId}")
-    @Operation(summary = "删除会话", description = "删除指定会话及其关联数据（ai_file_info和ai_ppt_inst）")
+    @Operation(summary = "删除会话", description = "删除当前用户下的指定会话及其关联数据（ai_file_info 和 ai_ppt_inst）")
     @Transactional(rollbackFor = Exception.class)
     public BaseResult<String> deleteSession(@PathVariable String conversationId) {
-        log.info("删除会话: conversationId={}", conversationId);
+        Long userId = UserContext.currentUserId();
+        if (userId == null) {
+            return BaseResult.newAuthError();
+        }
+        log.info("删除会话: conversationId={}, userId={}", conversationId, userId);
 
         try {
-            // 查询会话获取agent类型
-            LambdaQueryWrapper<AiSession> sessionQuery = new LambdaQueryWrapper<AiSession>()
-                    .eq(AiSession::getSessionId, conversationId)
-                    .last("LIMIT 1");
-            AiSession session = aiSessionService.getOne(sessionQuery);
+            // 先确认该会话属于当前用户
+            AiSession session = aiSessionService.getOne(
+                    new LambdaQueryWrapper<AiSession>()
+                            .eq(AiSession::getSessionId, conversationId)
+                            .eq(AiSession::getUserId, userId)
+                            .last("LIMIT 1"));
 
             if (session == null) {
                 return BaseResult.newError("会话不存在");
             }
 
-            // 删除关联的ai_file_info数据
-            LambdaQueryWrapper<AiFileInfo> fileQuery = new LambdaQueryWrapper<AiFileInfo>()
-                    .eq(AiFileInfo::getConversationId, conversationId);
-            aiFileInfoMapper.delete(fileQuery);
+            // 删除关联的 ai_file_info 数据
+            aiFileInfoMapper.delete(
+                    new LambdaQueryWrapper<AiFileInfo>()
+                            .eq(AiFileInfo::getConversationId, conversationId));
 
-            // 删除关联的ai_ppt_inst数据
-            LambdaQueryWrapper<AiPptInst> pptQuery = new LambdaQueryWrapper<AiPptInst>()
-                    .eq(AiPptInst::getConversationId, conversationId);
-            aiPptInstMapper.delete(pptQuery);
+            // 删除关联的 ai_ppt_inst 数据
+            aiPptInstMapper.delete(
+                    new LambdaQueryWrapper<AiPptInst>()
+                            .eq(AiPptInst::getConversationId, conversationId));
 
-            // 删除会话记录
-            LambdaQueryWrapper<AiSession> deleteSessionQuery = new LambdaQueryWrapper<AiSession>()
-                    .eq(AiSession::getSessionId, conversationId);
-            aiSessionService.remove(deleteSessionQuery);
+            // 删除会话记录（按 userId 限定，避免越权）
+            aiSessionService.remove(
+                    new LambdaQueryWrapper<AiSession>()
+                            .eq(AiSession::getSessionId, conversationId)
+                            .eq(AiSession::getUserId, userId));
 
             return BaseResult.newSuccess("会话删除成功");
 

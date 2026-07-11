@@ -49,6 +49,8 @@ public abstract class BaseAgent {
     protected String currentConversationId;
     protected String currentQuestion;
     protected String currentRecommendations;
+    /** 当前登录用户 users.id（由 Controller 从 UserContext 注入） */
+    protected Long currentUserId;
 
     /**
      * 构造函数
@@ -121,8 +123,8 @@ public abstract class BaseAgent {
             return MessageWindowChatMemory.builder().maxMessages(maxMessages).build();
         }
 
-        // 查询数据库中的对话历史
-        List<AiSession> history = sessionService.findRecentBySessionId(sessionId, maxMessages);
+        // 查询数据库中的对话历史（按 userId 隔离，避免跨用户读到历史）
+        List<AiSession> history = sessionService.findRecentBySessionId(sessionId, currentUserId, maxMessages);
 
         // 创建 ChatMemory
         ChatMemory chatMemory = MessageWindowChatMemory.builder().maxMessages(maxMessages).build();
@@ -437,5 +439,9 @@ public abstract class BaseAgent {
 
     public boolean isEnableRecommendations() {
         return enableRecommendations;
+    }
+
+    public void setCurrentUserId(Long currentUserId) {
+        this.currentUserId = currentUserId;
     }
 }

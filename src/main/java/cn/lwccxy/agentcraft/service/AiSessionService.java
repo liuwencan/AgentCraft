@@ -21,7 +21,14 @@ public interface AiSessionService extends IService<AiSession> {
     List<AiSession> findRecentBySessionId(String sessionId, int maxRecords);
 
     /**
-     * 保存用户问题
+     * 根据会话ID + 用户ID 查询最近的对话记录，确保会话隔离
+     */
+    List<AiSession> findRecentBySessionId(String sessionId, Long userId, int maxRecords);
+
+    /**
+     * 保存用户问题。<b>当前登录用户的 users.id 会从 {@link cn.lwccxy.agentcraft.context.UserContext}
+     * 自动填充到 {@code ai_session.userId}</b>，调用方无需显式传入。
+     *
      * @param request 保存请求
      * @return 保存的会话记录
      */

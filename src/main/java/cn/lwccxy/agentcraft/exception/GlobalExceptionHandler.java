@@ -1,5 +1,6 @@
 package cn.lwccxy.agentcraft.exception;
 
+import cn.dev33.satoken.exception.NotLoginException;
 import cn.lwccxy.agentcraft.common.BaseResult;
 import io.swagger.v3.oas.annotations.Hidden;
 import jakarta.servlet.http.HttpServletRequest;
@@ -108,6 +109,13 @@ public class GlobalExceptionHandler {
                 request.getRequestURI(), e.getName(), requiredType, e.getValue());
         log.error(msg, e.getMessage());
         return BaseResult.fail(400, msg);
+    }
+
+    @ExceptionHandler(NotLoginException.class)
+    @ResponseStatus(HttpStatus.UNAUTHORIZED)
+    public BaseResult handleNotLoginException(NotLoginException e, HttpServletRequest request) {
+        log.debug("请求地址[{}]未认证: {}", request.getRequestURI(), e.getMessage());
+        return BaseResult.newAuthError();
     }
 
     @ExceptionHandler(IllegalArgumentException.class)

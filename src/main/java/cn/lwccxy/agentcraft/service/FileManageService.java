@@ -291,6 +291,45 @@ public class FileManageService {
     }
 
     /**
+     * 根据 fileId 下载文件输入流（用于前端预览，绕过 MinIO CORS）
+     *
+     * @param fileId 文件ID
+     * @return 文件输入流
+     */
+    public InputStream downloadFileByFileId(String fileId) {
+        FileInfo fileInfo = getFileInfo(fileId);
+        if (fileInfo.getMinioPath() == null || fileInfo.getMinioPath().isEmpty()) {
+            throw new IllegalStateException("文件没有 MinIO 路径: " + fileId);
+        }
+        String objectName = extractObjectName(fileInfo.getMinioPath());
+        try {
+            return minioService.downloadFile(objectName);
+        } catch (Exception e) {
+            throw new RuntimeException("下载文件失败: " + e.getMessage(), e);
+        }
+    }
+
+    /**
+     * 根据文件扩展名获取 MIME 类型
+     */
+    public static String getMimeType(String fileType) {
+        if (fileType == null) return "application/octet-stream";
+        return switch (fileType.toLowerCase()) {
+            case "png" -> "image/png";
+            case "jpg", "jpeg" -> "image/jpeg";
+            case "gif" -> "image/gif";
+            case "bmp" -> "image/bmp";
+            case "webp" -> "image/webp";
+            case "svg" -> "image/svg+xml";
+            case "pdf" -> "application/pdf";
+            case "txt" -> "text/plain;charset=UTF-8";
+            case "doc" -> "application/msword";
+            case "docx" -> "application/vnd.openxmlformats-officedocument.wordprocessingml.document";
+            default -> "application/octet-stream";
+        };
+    }
+
+    /**
      * 删除文件
      *
      * @param fileId 文件ID

@@ -99,4 +99,11 @@ public class AiSession {
      */
     @TableField("recommend")
     private String recommend;
+
+    /**
+     * 所属用户业务 ID（对应 users.uid）
+     * <p>表字段名为 {@code userId}（驼峰），必须显式声明以匹配 MySQL 列名。</p>
+     */
+    @TableField("userId")
+    private Long userId;
 }

@@ -38,4 +38,11 @@ public class SaveQuestionRequest {
      * 首次响应时间（毫秒，可选）
      */
     private Long firstResponseTime;
+
+    /**
+     * 所属用户业务 ID（对应 users.id）。
+     * <p>如不显式传入，{@code AiSessionServiceImpl.saveQuestion} 会从
+     * {@link cn.lwccxy.agentcraft.context.UserContext} 自动取当前登录用户的 users.id。</p>
+     */
+    private Long userId;
 }

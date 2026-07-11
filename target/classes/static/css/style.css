@@ -6,28 +6,118 @@
 }
 
 :root {
+    /* === 主色 (品牌色) === */
     --primary-color: #8b5cf6;
     --primary-light: #a78bfa;
     --primary-dark: #6d28d9;
     --accent-color: #06b6d4;
     --accent-light: #22d3ee;
-    --bg-light: rgba(15, 23, 42, 0.7);
-    --text-primary: #f8fafc;
-    --text-secondary: #94a3b8;
-    --border-color: rgba(99, 102, 241, 0.4);
     --success-color: #10b981;
     --warning-color: #f59e0b;
+
+    /* === 尺寸 === */
     --sidebar-width: 280px;
+
+    /* === 暗色主题 (默认) === */
+    --bg-app: #1a1a1a;
+    --bg-sidebar: #252525;
+    --bg-elevated: rgba(30, 41, 59, 0.6);
+    --bg-input: rgba(15, 23, 42, 0.7);
+    --bg-hover: rgba(139, 92, 246, 0.15);
+    --bg-active: rgba(139, 92, 246, 0.25);
+    --bg-code-block: rgba(10, 15, 30, 0.8);
+    --bg-code-inline: rgba(139, 92, 246, 0.15);
+    --bg-overlay: rgba(0, 0, 0, 0.7);
+    --bg-dialog: linear-gradient(135deg, #2a2a2a, #1f1f1f);
+    --bg-button-ghost: #3a3a3a;
+    --bg-button-ghost-hover: #4a4a4a;
+    --bg-timeline: rgba(15, 23, 42, 0.5);
+    --bg-reference: rgba(15, 23, 42, 0.4);
+    --bg-reference-hover: rgba(15, 23, 42, 0.7);
+    --bg-recommend: rgba(30, 41, 59, 0.5);
+    --bg-recommend-hover: rgba(30, 41, 59, 0.7);
+
+    --text-primary: #f8fafc;
+    --text-secondary: #94a3b8;
+    --text-code: #e879f9;
+    --text-on-accent: white;
+
+    --border-color: rgba(99, 102, 241, 0.4);
+    --border-soft: #333;
+    --border-strong: rgba(139, 92, 246, 0.3);
+    --border-reference: rgba(6, 182, 212, 0.25);
+    --border-reference-soft: rgba(6, 182, 212, 0.15);
+
+    --shadow-color-sm: rgba(0, 0, 0, 0.3);
+    --shadow-color-md: rgba(0, 0, 0, 0.4);
+    --shadow-color-lg: rgba(0, 0, 0, 0.5);
+
+    --scrollbar-thumb: rgba(139, 92, 246, 0.4);
+    --scrollbar-thumb-hover: rgba(139, 92, 246, 0.6);
+
     --glow-color: rgba(139, 92, 246, 0.6);
+    --glow-color-soft: rgba(139, 92, 246, 0.15);
+
+    /* === 兼容旧变量 === */
+    --bg-light: var(--bg-input);
+}
+
+/* === 明亮主题 === */
+[data-theme="light"] {
+    --primary-color: #7c3aed;
+    --primary-light: #8b5cf6;
+    --primary-dark: #6d28d9;
+    --accent-color: #0891b2;
+    --accent-light: #06b6d4;
+
+    --bg-app: #f5f5f4;
+    --bg-sidebar: #ffffff;
+    --bg-elevated: #fafaf9;
+    --bg-input: #ffffff;
+    --bg-hover: rgba(124, 58, 237, 0.06);
+    --bg-active: rgba(124, 58, 237, 0.12);
+    --bg-code-block: #f5f3ff;
+    --bg-code-inline: rgba(124, 58, 237, 0.08);
+    --bg-overlay: rgba(0, 0, 0, 0.35);
+    --bg-dialog: #ffffff;
+    --bg-button-ghost: #f1f5f9;
+    --bg-button-ghost-hover: #e2e8f0;
+    --bg-timeline: rgba(124, 58, 237, 0.04);
+    --bg-reference: #f0f9ff;
+    --bg-reference-hover: #e0f2fe;
+    --bg-recommend: #fafaf9;
+    --bg-recommend-hover: #f5f3ff;
+
+    --text-primary: #1c1917;
+    --text-secondary: #57534e;
+    --text-code: #7c3aed;
+    --text-on-accent: white;
+
+    --border-color: rgba(124, 58, 237, 0.2);
+    --border-soft: #e7e5e4;
+    --border-strong: rgba(124, 58, 237, 0.25);
+    --border-reference: rgba(8, 145, 178, 0.3);
+    --border-reference-soft: rgba(8, 145, 178, 0.2);
+
+    --shadow-color-sm: rgba(0, 0, 0, 0.04);
+    --shadow-color-md: rgba(0, 0, 0, 0.08);
+    --shadow-color-lg: rgba(0, 0, 0, 0.15);
+
+    --scrollbar-thumb: rgba(124, 58, 237, 0.3);
+    --scrollbar-thumb-hover: rgba(124, 58, 237, 0.5);
+
+    --glow-color: rgba(124, 58, 237, 0.1);
+    --glow-color-soft: rgba(124, 58, 237, 0.05);
 }
 
 body {
     font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif;
-    background: #1a1a1a;
+    background: var(--bg-app);
     color: var(--text-primary);
     height: 100vh;
     overflow: hidden;
     position: relative;
+    transition: background-color 0.3s ease, color 0.3s ease;
 }
 
 #app {
@@ -47,22 +137,29 @@ body {
 /* 侧边栏样式 */
 .sidebar {
     width: var(--sidebar-width);
-    background: #252525;
-    border-right: 1px solid #333;
+    background: var(--bg-sidebar);
+    border-right: 1px solid var(--border-soft);
     display: flex;
     flex-direction: column;
+    transition: background-color 0.3s ease, border-color 0.3s ease;
 }
 
 .sidebar-header {
     padding: 24px 20px;
-    border-bottom: 1px solid var(--border-color);
+    border-bottom: 1px solid var(--border-soft);
+}
+
+.header-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 20px;
 }
 
 .app-title {
     display: flex;
     align-items: center;
     gap: 12px;
-    margin-bottom: 20px;
 }
 
 .logo-icon {
@@ -95,7 +192,7 @@ body {
     width: 100%;
     padding: 14px 20px;
     background: linear-gradient(135deg, var(--primary-color), var(--accent-color));
-    color: white;
+    color: var(--text-on-accent);
     border: none;
     border-radius: 14px;
     font-size: 14px;
@@ -106,12 +203,12 @@ body {
     align-items: center;
     justify-content: center;
     gap: 10px;
-    box-shadow: 0 4px 15px rgba(139, 92, 246, 0.3);
+    box-shadow: 0 4px 15px var(--shadow-color-md);
 }
 
 .new-chat-btn:hover {
     transform: translateY(-2px);
-    box-shadow: 0 6px 20px rgba(139, 92, 246, 0.5);
+    box-shadow: 0 6px 20px var(--shadow-color-lg);
 }
 
 .new-chat-btn i {
@@ -138,12 +235,12 @@ body {
 }
 
 .chat-item:hover {
-    background: rgba(139, 92, 246, 0.15);
+    background: var(--bg-hover);
     transform: translateX(2px);
 }
 
 .chat-item.active {
-    background: rgba(139, 92, 246, 0.25);
+    background: var(--bg-active);
     border-color: var(--primary-color);
 }
 
@@ -183,7 +280,7 @@ body {
 
 .sidebar-footer {
     padding: 20px;
-    border-top: 1px solid var(--border-color);
+    border-top: 1px solid var(--border-soft);
 }
 
 .model-info {
@@ -197,6 +294,67 @@ body {
 
 .model-info i {
     font-size: 12px;
+}
+
+/* 主题切换按钮 */
+.theme-toggle {
+    width: 40px;
+    height: 40px;
+    border-radius: 12px;
+    border: 1px solid var(--border-soft);
+    background: var(--bg-elevated);
+    color: var(--text-primary);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    font-size: 16px;
+    position: relative;
+    overflow: hidden;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    flex-shrink: 0;
+}
+
+.theme-toggle:hover {
+    border-color: var(--primary-color);
+    color: var(--primary-color);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px var(--shadow-color-md);
+}
+
+.theme-toggle:active {
+    transform: translateY(0) scale(0.96);
+}
+
+.theme-toggle .theme-icon {
+    position: absolute;
+    transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1),
+                opacity 0.3s ease;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.theme-toggle .fa-sun {
+    color: #f59e0b;
+    transform: rotate(0deg) scale(1);
+    opacity: 1;
+}
+
+.theme-toggle .fa-moon {
+    color: var(--primary-light);
+    transform: rotate(-90deg) scale(0);
+    opacity: 0;
+}
+
+[data-theme="light"] .theme-toggle .fa-sun {
+    transform: rotate(90deg) scale(0);
+    opacity: 0;
+}
+
+[data-theme="light"] .theme-toggle .fa-moon {
+    transform: rotate(0deg) scale(1);
+    opacity: 1;
 }
 
 /* 主内容区域 */
@@ -291,7 +449,7 @@ body {
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
-    text-shadow: 0 0 30px rgba(139, 92, 246, 0.5);
+    text-shadow: 0 0 30px var(--glow-color);
 }
 
 .empty-state p {
@@ -311,19 +469,21 @@ body {
     align-items: center;
     gap: 10px;
     padding: 14px 24px;
-    background: rgba(30, 41, 59, 0.6);
+    background: var(--bg-elevated);
     border: 1px solid var(--border-color);
     border-radius: 12px;
     cursor: pointer;
     transition: all 0.2s ease;
     font-size: 14px;
+    color: var(--text-primary);
 }
 
 .quick-action:hover {
     background: var(--primary-color);
     border-color: var(--primary-color);
+    color: var(--text-on-accent);
     transform: translateY(-2px);
-    box-shadow: 0 4px 15px rgba(139, 92, 246, 0.4);
+    box-shadow: 0 4px 15px var(--shadow-color-md);
 }
 
 .quick-action i {
@@ -359,7 +519,7 @@ body {
     justify-content: center;
     font-size: 22px;
     flex-shrink: 0;
-    box-shadow: 0 4px 15px rgba(139, 92, 246, 0.3);
+    box-shadow: 0 4px 15px var(--shadow-color-md);
 }
 
 .message.user .message-avatar {
@@ -374,20 +534,20 @@ body {
 
 .user-message {
     background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
-    color: white;
+    color: var(--text-on-accent);
     padding: 16px 20px;
     border-radius: 20px 20px 6px 20px;
     display: inline-block;
     max-width: 70%;
     line-height: 1.7;
-    box-shadow: 0 4px 15px rgba(139, 92, 246, 0.3);
+    box-shadow: 0 4px 15px var(--shadow-color-md);
 }
 
 .user-message .file-attachment {
     display: inline-flex;
     align-items: center;
     gap: 8px;
-    background: rgba(255, 255, 255, 0.15);
+    background: rgba(255, 255, 255, 0.18);
     padding: 10px 16px;
     border-radius: 10px;
     margin-bottom: 12px;
@@ -407,8 +567,8 @@ body {
     margin-bottom: 20px;
     border-radius: 16px;
     overflow: hidden;
-    border: 1px solid rgba(139, 92, 246, 0.3);
-    background: rgba(15, 23, 42, 0.5);
+    border: 1px solid var(--border-strong);
+    background: var(--bg-timeline);
     backdrop-filter: blur(10px);
 }
 
@@ -417,7 +577,7 @@ body {
     align-items: center;
     gap: 12px;
     padding: 12px 18px;
-    background: rgba(139, 92, 246, 0.15);
+    background: var(--bg-hover);
     cursor: pointer;
     font-size: 14px;
     color: var(--text-secondary);
@@ -425,13 +585,13 @@ body {
 }
 
 .timeline-header:hover {
-    background: rgba(139, 92, 246, 0.25);
+    background: var(--bg-active);
 }
 
 .timeline-icon-wrapper {
     width: 28px;
     height: 28px;
-    background: rgba(139, 92, 246, 0.3);
+    background: var(--bg-active);
     border-radius: 6px;
     display: flex;
     align-items: center;
@@ -486,8 +646,9 @@ body {
 }
 
 .timeline-dot.thinking {
-    background: rgba(139, 92, 246, 0.6);
+    background: var(--primary-color);
     border: 2px solid var(--primary-light);
+    opacity: 0.7;
 }
 
 .timeline-dot.running {
@@ -661,17 +822,17 @@ body {
 }
 
 .markdown-body code {
-    background: rgba(139, 92, 246, 0.15);
+    background: var(--bg-code-inline);
     padding: 4px 10px;
     border-radius: 6px;
     font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
     font-size: 13px;
-    color: #e879f9;
-    border: 1px solid rgba(139, 92, 246, 0.3);
+    color: var(--text-code);
+    border: 1px solid var(--border-strong);
 }
 
 .markdown-body pre {
-    background: rgba(10, 15, 30, 0.8);
+    background: var(--bg-code-block);
     padding: 18px;
     border-radius: 14px;
     overflow-x: auto;
@@ -693,7 +854,7 @@ body {
     margin: 16px 0;
     color: var(--text-secondary);
     font-style: italic;
-    background: rgba(139, 92, 246, 0.05);
+    background: var(--glow-color-soft);
     padding: 14px 18px;
     border-radius: 0 12px 12px 0;
 }
@@ -736,13 +897,13 @@ body {
 }
 
 .markdown-body th {
-    background: rgba(139, 92, 246, 0.15);
+    background: var(--bg-hover);
     font-weight: 600;
     color: var(--primary-light);
 }
 
 .markdown-body tr:hover {
-    background: rgba(139, 92, 246, 0.05);
+    background: var(--glow-color-soft);
 }
 
 /* 参考链接样式 */
@@ -750,8 +911,8 @@ body {
     margin-top: 24px;
     border-radius: 12px;
     overflow: hidden;
-    border: 1px solid rgba(6, 182, 212, 0.25);
-    background: rgba(6, 182, 212, 0.08);
+    border: 1px solid var(--border-reference);
+    background: var(--bg-reference);
 }
 
 .reference-header {
@@ -759,7 +920,7 @@ body {
     align-items: center;
     gap: 12px;
     padding: 14px 18px;
-    background: rgba(6, 182, 212, 0.12);
+    background: var(--bg-reference);
     cursor: pointer;
     font-size: 14px;
     color: var(--text-secondary);
@@ -767,7 +928,7 @@ body {
 }
 
 .reference-header:hover {
-    background: rgba(6, 182, 212, 0.18);
+    background: var(--bg-reference-hover);
 }
 
 .reference-icon-wrapper {
@@ -801,16 +962,17 @@ body {
     align-items: center;
     gap: 14px;
     padding: 14px 16px;
-    background: rgba(15, 23, 42, 0.4);
+    background: var(--bg-reference);
     border-radius: 12px;
     text-decoration: none;
     transition: all 0.25s ease;
-    border: 1px solid rgba(6, 182, 212, 0.15);
+    border: 1px solid var(--border-reference-soft);
+    color: inherit;
 }
 
 .reference-link:hover {
-    background: rgba(15, 23, 42, 0.7);
-    border-color: rgba(6, 182, 212, 0.4);
+    background: var(--bg-reference-hover);
+    border-color: var(--border-reference);
 }
 
 .ref-icon {
@@ -826,7 +988,7 @@ body {
 
 .ref-icon i {
     font-size: 14px;
-    color: white;
+    color: var(--text-on-accent);
 }
 
 .ref-info {
@@ -872,8 +1034,8 @@ body {
     align-items: center;
     gap: 14px;
     padding: 14px 16px;
-    background: rgba(30, 41, 59, 0.5);
-    border: 1px solid rgba(139, 92, 246, 0.25);
+    background: var(--bg-recommend);
+    border: 1px solid var(--border-strong);
     border-radius: 12px;
     cursor: pointer;
     transition: all 0.25s ease;
@@ -890,17 +1052,17 @@ body {
     left: 0;
     right: 0;
     bottom: 0;
-    background: linear-gradient(135deg, rgba(139, 92, 246, 0.1), rgba(6, 182, 212, 0.1));
+    background: linear-gradient(135deg, var(--glow-color-soft), var(--bg-reference));
     opacity: 0;
     transition: opacity 0.25s ease;
     z-index: 0;
 }
 
 .recommend-item:hover {
-    background: rgba(30, 41, 59, 0.7);
-    border-color: rgba(139, 92, 246, 0.5);
+    background: var(--bg-recommend-hover);
+    border-color: var(--primary-color);
     transform: translateY(-2px);
-    box-shadow: 0 6px 20px rgba(139, 92, 246, 0.2);
+    box-shadow: 0 6px 20px var(--shadow-color-md);
 }
 
 .recommend-item:hover::before {
@@ -922,7 +1084,7 @@ body {
 
 .recommend-icon i {
     font-size: 16px;
-    color: white;
+    color: var(--text-on-accent);
 }
 
 .recommend-text {
@@ -970,7 +1132,7 @@ body {
     gap: 12px;
     padding: 14px 28px;
     background: linear-gradient(135deg, var(--success-color), #059669);
-    color: white;
+    color: var(--text-on-accent);
     text-decoration: none;
     border-radius: 12px;
     font-size: 14px;
@@ -993,8 +1155,8 @@ body {
     margin-top: 16px;
     width: 36px;
     height: 36px;
-    background: rgba(15, 23, 42, 0.5);
-    border: 1px solid rgba(6, 182, 212, 0.2);
+    background: var(--bg-elevated);
+    border: 1px solid var(--border-reference-soft);
     border-radius: 8px;
     display: flex;
     align-items: center;
@@ -1006,9 +1168,9 @@ body {
 }
 
 .copy-btn:hover {
-    background: rgba(6, 182, 212, 0.15);
-    border-color: rgba(6, 182, 212, 0.4);
-    color: var(--accent-light);
+    background: var(--bg-reference);
+    border-color: var(--border-reference);
+    color: var(--accent-color);
 }
 
 .copy-btn i {
@@ -1027,7 +1189,7 @@ body {
 /* 输入区域 */
 .input-area {
     padding: 0 80px 30px 80px;
-    background: linear-gradient(to top, rgba(10, 15, 30, 0.8) 0%, transparent 100%);
+    background: linear-gradient(to top, var(--bg-app) 0%, transparent 100%);
 }
 
 /* 智能体选择器 */
@@ -1043,22 +1205,23 @@ body {
     align-items: center;
     gap: 10px;
     padding: 12px 20px;
-    background: rgba(30, 41, 59, 0.5);
+    background: var(--bg-elevated);
     border-radius: 24px;
     cursor: pointer;
     transition: all 0.2s ease;
     border: 2px solid transparent;
+    color: var(--text-primary);
 }
 
 .agent-item:hover {
-    background: rgba(139, 92, 246, 0.15);
+    background: var(--bg-hover);
     transform: translateY(-1px);
 }
 
 .agent-item.active {
-    background: rgba(139, 92, 246, 0.25);
+    background: var(--bg-active);
     border-color: var(--primary-color);
-    box-shadow: 0 0 20px rgba(139, 92, 246, 0.3);
+    box-shadow: 0 0 20px var(--shadow-color-md);
 }
 
 .agent-icon {
@@ -1109,7 +1272,7 @@ body {
 
 .file-icon {
     font-size: 24px;
-    color: white;
+    color: var(--text-on-accent);
 }
 
 .file-info {
@@ -1189,18 +1352,18 @@ body {
     display: flex;
     align-items: center;
     gap: 12px;
-    background: rgba(15, 23, 42, 0.7);
+    background: var(--bg-input);
     border-radius: 20px;
     padding: 14px 18px;
     border: 2px solid var(--border-color);
-    transition: border-color 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease, background-color 0.3s ease;
     backdrop-filter: blur(10px);
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+    box-shadow: 0 4px 20px var(--shadow-color-sm);
 }
 
 .input-container:focus-within {
     border-color: var(--primary-color);
-    box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.15), 0 4px 20px rgba(0, 0, 0, 0.4);
+    box-shadow: 0 0 0 3px var(--glow-color-soft), 0 4px 20px var(--shadow-color-md);
     transform: translateY(-1px);
 }
 
@@ -1211,8 +1374,8 @@ body {
     height: 48px;
     border: none;
     border-radius: 12px;
-    background: rgba(139, 92, 246, 0.15);
-    color: var(--primary-light);
+    background: var(--bg-hover);
+    color: var(--primary-color);
     cursor: pointer;
     transition: all 0.2s ease;
     font-size: 20px;
@@ -1223,7 +1386,7 @@ body {
 
 .file-btn:hover:not(.disabled) {
     background: linear-gradient(135deg, var(--primary-color), var(--accent-color));
-    color: white;
+    color: var(--text-on-accent);
     transform: scale(1.05);
 }
 
@@ -1257,7 +1420,7 @@ textarea::placeholder {
     width: 48px;
     height: 48px;
     background: linear-gradient(135deg, var(--primary-color), var(--accent-color));
-    color: white;
+    color: var(--text-on-accent);
     border: none;
     border-radius: 12px;
     cursor: pointer;
@@ -1265,12 +1428,12 @@ textarea::placeholder {
     display: flex;
     align-items: center;
     justify-content: center;
-    box-shadow: 0 4px 15px rgba(139, 92, 246, 0.4);
+    box-shadow: 0 4px 15px var(--shadow-color-md);
 }
 
 .send-btn:hover:not(.disabled) {
     transform: scale(1.05) translateY(-2px);
-    box-shadow: 0 6px 20px rgba(139, 92, 246, 0.6);
+    box-shadow: 0 6px 20px var(--shadow-color-lg);
 }
 
 .send-btn.disabled {
@@ -1304,7 +1467,7 @@ textarea::placeholder {
     display: flex;
     align-items: center;
     justify-content: center;
-    color: white;
+    color: var(--text-on-accent);
     font-size: 18px;
 }
 
@@ -1331,7 +1494,7 @@ textarea::placeholder {
     right: 30px;
     padding: 16px 24px;
     background: linear-gradient(135deg, #ef4444, #dc2626);
-    color: white;
+    color: var(--text-on-accent);
     border-radius: 12px;
     display: flex;
     align-items: center;
@@ -1418,12 +1581,12 @@ textarea::placeholder {
 }
 
 ::-webkit-scrollbar-thumb {
-    background: rgba(139, 92, 246, 0.4);
+    background: var(--scrollbar-thumb);
     border-radius: 3px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-    background: rgba(139, 92, 246, 0.6);
+    background: var(--scrollbar-thumb-hover);
 }
 
 /* 静态光晕效果 */
@@ -1434,27 +1597,42 @@ textarea::placeholder {
     pointer-events: none;
     z-index: -1;
     opacity: 0.3;
+    transition: opacity 0.3s ease;
 }
 
 .glow-effect-1 {
     width: 300px;
     height: 300px;
-    background: radial-gradient(circle, rgba(139, 92, 246, 0.2), transparent);
+    background: radial-gradient(circle, var(--primary-color), transparent);
     top: -50px;
     left: -50px;
+    opacity: 0.2;
 }
 
 .glow-effect-2 {
     width: 400px;
     height: 400px;
-    background: radial-gradient(circle, rgba(6, 182, 212, 0.15), transparent);
+    background: radial-gradient(circle, var(--accent-color), transparent);
     bottom: -100px;
     right: -100px;
+    opacity: 0.15;
+}
+
+[data-theme="light"] .glow-effect {
+    opacity: 0.08;
+}
+
+[data-theme="light"] .glow-effect-1 {
+    opacity: 0.1;
+}
+
+[data-theme="light"] .glow-effect-2 {
+    opacity: 0.08;
 }
 
 /* 代码块样式 */
 .markdown-body pre {
-    background: rgba(10, 15, 30, 0.8);
+    background: var(--bg-code-block);
     padding: 18px;
     border-radius: 12px;
     overflow-x: auto;
@@ -1467,8 +1645,8 @@ textarea::placeholder {
     margin-bottom: 20px;
     border-radius: 12px;
     overflow: hidden;
-    border: 1px solid rgba(139, 92, 246, 0.3);
-    background: rgba(139, 92, 246, 0.08);
+    border: 1px solid var(--border-strong);
+    background: var(--bg-timeline);
 }
 
 /* 参考区域 */
@@ -1476,24 +1654,8 @@ textarea::placeholder {
     margin-top: 24px;
     border-radius: 12px;
     overflow: hidden;
-    border: 1px solid rgba(6, 182, 212, 0.25);
-    background: rgba(6, 182, 212, 0.08);
-}
-
-/* 连接错误提示 */
-.connection-error {
-    position: fixed;
-    bottom: 30px;
-    right: 30px;
-    padding: 16px 24px;
-    background: linear-gradient(135deg, #ef4444, #dc2626);
-    color: white;
-    border-radius: 12px;
-    display: flex;
-    align-items: center;
-    gap: 14px;
-    box-shadow: 0 8px 20px rgba(239, 68, 68, 0.3);
-    z-index: 1000;
+    border: 1px solid var(--border-reference);
+    background: var(--bg-reference);
 }
 
 /* 确认对话框 */
@@ -1503,7 +1665,7 @@ textarea::placeholder {
     left: 0;
     right: 0;
     bottom: 0;
-    background: rgba(0, 0, 0, 0.7);
+    background: var(--bg-overlay);
     backdrop-filter: blur(8px);
     display: flex;
     align-items: center;
@@ -1512,13 +1674,13 @@ textarea::placeholder {
 }
 
 .confirm-dialog {
-    background: linear-gradient(135deg, #2a2a2a, #1f1f1f);
-    border: 1px solid #3a3a3a;
+    background: var(--bg-dialog);
+    border: 1px solid var(--border-soft);
     border-radius: 16px;
     padding: 32px;
     min-width: 400px;
     max-width: 500px;
-    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+    box-shadow: 0 20px 60px var(--shadow-color-lg);
     animation: dialogSlideIn 0.3s ease-out;
 }
 
@@ -1578,19 +1740,19 @@ textarea::placeholder {
 }
 
 .confirm-btn.cancel {
-    background: #3a3a3a;
+    background: var(--bg-button-ghost);
     color: var(--text-primary);
-    border: 1px solid #4a4a4a;
+    border: 1px solid var(--border-soft);
 }
 
 .confirm-btn.cancel:hover {
-    background: #4a4a4a;
+    background: var(--bg-button-ghost-hover);
     transform: translateY(-2px);
 }
 
 .confirm-btn.danger {
     background: linear-gradient(135deg, #ef4444, #dc2626);
-    color: white;
+    color: var(--text-on-accent);
     box-shadow: 0 4px 15px rgba(239, 68, 68, 0.3);
 }
 

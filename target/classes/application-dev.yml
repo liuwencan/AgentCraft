@@ -35,9 +35,9 @@ spring:
           temperature: 0.7
           maxTokens: 5000
   datasource:
-    url: jdbc:mysql://127.0.0.1:3306/dodo?useUnicode=true&characterEncoding=utf8&useSSL=false&serverTimezone=GMT%2B8 # 记得改成你自己的
-    username: root # 记得改成你自己的
-    password: 123456 # 记得改成你自己的
+    url: jdbc:mysql://127.0.0.1:3306/dodo?useUnicode=true&characterEncoding=utf8&useSSL=false&serverTimezone=GMT%2B8  
+    username: root  
+    password: 123456  
     driver-class-name: com.mysql.cj.jdbc.Driver
     # 连接池配置
     hikari:
@@ -47,14 +47,30 @@ spring:
       connection-timeout: 30000
       max-lifetime: 1800000
 
-  # Redis 配置
-  data:
-    redis:
-      host: localhost   # 记得改成你自己的
-      port: 6379
-      database: 6
-      timeout: 5s
-      password: 123456
+  # Redis 配置：统一走 Redisson（不做 spring.data.redis 配置，避免与 Redisson 重复注册连接工厂）
+  redis:
+    redisson:
+      config: |
+        singleServerConfig:
+          idleConnectionTimeout: 10000
+          connectTimeout: 10000
+          timeout: 3000
+          retryAttempts: 3
+          retryInterval: 1500
+          password: 123456
+          subscriptionsPerConnection: 5
+          clientName: null
+          address: "redis://localhost:6379"
+          subscriptionConnectionMinimumIdleSize: 1
+          subscriptionConnectionPoolSize: 50
+          connectionMinimumIdleSize: 24
+          connectionPoolSize: 64
+          database: 6
+          dnsMonitoringInterval: 5000
+        threads: 16
+        nettyThreads: 32
+        codec: !<org.redisson.codec.JsonJacksonCodec> {}
+        transportMode: "NIO"
 
   # MyBatis-Plus 配置
   mybatis-plus:
@@ -66,28 +82,28 @@ spring:
       max-request-size: 50MB
 
 minio:
-  url: http://127.0.0.1:9000/   # 记得改成你自己的
-  accessKey: minioadmin # 记得改成你自己的
-  secretKey: minioadmin # 记得改成你自己的
+  url: http://127.0.0.1:9000/    
+  accessKey: minioadmin  
+  secretKey: minioadmin  
   bucketName: agentcraft
   endpoint: http://127.0.0.1:9000/
 
 embeddings:
   store:
-    host: 127.0.0.1   # 记得改成你自己的
-    port: 5433   # 记得改成你自己的
-    database: vector_store   # 记得改成你自己的
-    user: pgvector   # 记得改成你自己的
-    password: pgvector   # 记得改成你自己的
+    host: 127.0.0.1    
+    port: 5433    
+    database: vector_store    
+    user: pgvector    
+    password: pgvector    
 
 # Tavily 搜索引擎配置
 tavily:
-  api-key: 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  # 记得改成你自己的
+  api-key: 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   
   mcp-url: https://mcp.tavily.com/mcp/
 
 grsai:
   nanobanana:
-    api-key: sk-ec99XXXXXXXXXXXXXX # 记得改成你自己的
+    api-key: sk-ec99XXXXXXXXXXXXXX  
 
 logging:
   level:
@@ -121,3 +137,32 @@ management:
     metrics:
       export:
         enabled: true
+
+
+
+# Sa-Token 配置
+sa-token:
+  # token 名称（同时也是 Cookie 名称、Header 名称）
+  token-name: satoken
+  # token 有效期（秒），默认 30 天，-1 代表永久有效
+  timeout: 2592000
+  # token 最低活跃频率（秒），如果 token 超过这个时间没有访问系统就会被冻结，默认-1 代表不限制
+  active-timeout: -1
+  # 是否允许同一账号并发登录（为 true 时允许一起登录，为 false 时新登录会挤下旧登录）
+  is-concurrent: true
+  # 在多人登录同一账号时，是否共用一个 token（为 true 时所有登录共用一个 token，为 false 时每次登录新建一个 token）
+  is-share: true
+  # token 风格（uuid）
+  token-style: uuid
+  # 是否输出操作日志
+  is-log: false
+  # 是否从 cookie 中读取 token
+  is-read-cookie: true
+  # 是否从 header 中读取 token
+  is-read-header: true
+
+
+# 接入阿里云（发送短信使用）
+aliyun:
+  accessKeyId: ${ALIYUN_ACCESS_KEY_ID} # 填写你自己的
+  accessKeySecret: ${ALIYUN_ACCESS_KEY_SECRET} # 填写你自己的

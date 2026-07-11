@@ -6,11 +6,17 @@ import cn.lwccxy.agentcraft.service.FileManageService;
 import com.alibaba.fastjson2.JSON;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.io.IOUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -110,6 +116,45 @@ public class FileController {
         } catch (Exception e) {
             log.error("删除文件失败: fileId={}", fileId, e);
             return BaseResult.newError("删除文件失败: " + e.getMessage());
+        }
+    }
+
+    /**
+     * 预览文件（流式代理 MinIO, 用于前端图片 / PDF 等预览, 绕过 MinIO CORS 限制）
+     */
+    @GetMapping("/preview/{fileId}")
+    @Operation(summary = "预览文件", description = "根据文件ID从 MinIO 拉取字节流并以原始 MIME 返回, 用于前端图片预览等场景")
+    public void previewFile(@PathVariable String fileId, HttpServletResponse response) {
+        log.info("预览文件: fileId={}", fileId);
+        try {
+            FileInfo fileInfo = fileManageService.getFileInfo(fileId);
+
+            String mime = FileManageService.getMimeType(fileInfo.getFileType());
+            String fileName = fileInfo.getFileName() == null ? fileId : fileInfo.getFileName();
+            String encodedName = URLEncoder.encode(fileName, StandardCharsets.UTF_8)
+                    .replaceAll("\\+", "%20");
+
+            response.setContentType(mime);
+            response.setCharacterEncoding("UTF-8");
+            response.setHeader("Cache-Control", "public, max-age=3600");
+            response.setHeader("Content-Disposition",
+                    "inline; filename=\"" + encodedName + "\"; filename*=UTF-8''" + encodedName);
+
+            try (InputStream in = fileManageService.downloadFileByFileId(fileId);
+                 OutputStream out = response.getOutputStream()) {
+                IOUtils.copy(in, out);
+                out.flush();
+            }
+        } catch (Exception e) {
+            log.error("预览文件失败: fileId={}", fileId, e);
+            try {
+                response.reset();
+                response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+                response.setContentType("application/json;charset=UTF-8");
+                response.getWriter().write("{\"code\":500,\"message\":\"预览失败: "
+                        + e.getMessage().replace("\"", "'") + "\"}");
+            } catch (Exception ignored) {
+            }
         }
     }
 
